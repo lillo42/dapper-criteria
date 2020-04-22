@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
+using Dapper.Contrib.Extensions;
+using Dapper.Criteria.Attributes;
 using Dapper.Criteria.Expressions;
 using Dapper.Criteria.Orders;
+using Dapper.Criteria.Resolvers;
 using Dapper.Criteria.Selects;
 
 namespace Dapper.Criteria
@@ -19,6 +22,12 @@ namespace Dapper.Criteria
 
         public static SelectCriteria Create(Type type)
         {
+            var table = AttributeResolvers.GetTableName(type);
+            var schema = AttributeResolvers.GetSchemaName(type);
+            
+            
+            
+            return new 
         }
         
         private int _limit;

@@ -1,21 +1,22 @@
 using System;
 
-namespace Dapper.Criteria.Expressions
+namespace Dapper.Criteria.Expressions.Likes
 {
-    public class LikeExpression : IExpression
+    public class LikeByValueExpression : IExpression
     {
-        private readonly string _alias;
         private readonly string _column;
         private readonly string _value;
 
-        public LikeExpression(string column, string value, string alias)
+        public LikeByValueExpression(string column, string value, string alias)
         {
             _column = column ?? throw new ArgumentNullException(nameof(column));
             _value = value ?? throw new ArgumentNullException(nameof(value));
-            _alias = alias;
+            Alias = alias;
         }
 
+        public string Alias { get; set; }
+
         public string ToSql(ISqlDialect dialect) 
-            => $"{dialect.GetAlias(_alias)}.{dialect.GetColumn(_column)} LIKE '{_value}'";
+            => $"{dialect.GetAlias(Alias)}.{dialect.GetColumn(_column)} LIKE '{_value}'";
     }
 }

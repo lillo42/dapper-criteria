@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Dapper.Contrib.Extensions;
 using Dapper.Criteria.Attributes;
+using Dapper.Criteria.Selects;
 
 namespace Dapper.Criteria.Resolvers
 {
@@ -16,8 +17,8 @@ namespace Dapper.Criteria.Resolvers
         private static readonly ConcurrentDictionary<RuntimeTypeHandle, string> _schemaName =
             new ConcurrentDictionary<RuntimeTypeHandle, string>();
 
-        private static readonly ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<string>> _selectColumn =
-            new ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<string>>();
+        private static readonly ConcurrentDictionary<RuntimeTypeHandle, List<ISelect>> _selectColumn =
+            new ConcurrentDictionary<RuntimeTypeHandle, List<ISelect>>();
 
         public static string GetTableName(Type type)
         {
@@ -56,9 +57,7 @@ namespace Dapper.Criteria.Resolvers
 
             //NOTE: This as dynamic trick falls back to handle both our own Table-attribute as well as the one in EntityFramework 
             var schemaAttributeName =
-                type.GetCustomAttribute<SchemaAttribute>(false)?.Name
-                ?? (type.GetCustomAttributes(false)
-                    .FirstOrDefault(attr => attr.GetType().Name == "TableAttribute") as dynamic)?.Name;
+                type.GetCustomAttribute<SchemaAttribute>(false)?.Name;
 
             if (schemaAttributeName != null)
             {
@@ -69,19 +68,44 @@ namespace Dapper.Criteria.Resolvers
             return name;
         }
 
-        public static IEnumerable<string> GetCSelectColumn(Type type)
+        public static List<ISelect> GetSelectColumn(Type type)
         {
-            if (_selectColumn.TryGetValue(type.TypeHandle, out var column))
+            if (_selectColumn.TryGetValue(type.TypeHandle, out var columns))
             {
-                return column;
+                return columns;
             }
             
-            var properties = new List<string>();
+            columns = new List<ISelect>();
 
-            foreach (var property in type.GetProperties(BindingFlags.Public | BindingFlags.Instance ))
+            foreach (var property in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
+                var propertyType = property.PropertyType;
+                if (!propertyType.IsPrimitive
+                    && propertyType != typeof(string)
+                    && propertyType != typeof(DateTime)
+                    && propertyType != typeof(DateTimeOffset)
+                    && propertyType != typeof(Guid)
+                    && propertyType != typeof(decimal))
+                {
+                    continue;
+                }
                 
+                var column =
+                    type.GetCustomAttribute<ColumnAttribute>(false)?.Name
+                    ?? (type.GetCustomAttributes(false)
+                        .FirstOrDefault(attr => attr.GetType().Name == "ColumnAttribute") as dynamic)?.Name;
+
+                if (column == null)
+                {
+                    column = property.Name;
+                }
+                
+                
+                columns.Add(new SelectColumn(column, property.Name, null));
             }
+            
+            _selectColumn[type.TypeHandle] = columns;
+            return columns;
         }
     }
 }

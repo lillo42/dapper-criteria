@@ -1,6 +1,6 @@
 namespace Dapper.Criteria.Selects
 {
-    public static class Selects
+    public static class Select
     {
         public static ISelect Column(string column)
             => new SelectColumn(column, null, null);

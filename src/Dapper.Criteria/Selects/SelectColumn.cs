@@ -4,7 +4,6 @@ namespace Dapper.Criteria.Selects
 {
     public class SelectColumn : ISelect
     {
-        private readonly string _alias;
         private readonly string _column;
         private readonly string _propertyName;
 
@@ -12,10 +11,12 @@ namespace Dapper.Criteria.Selects
         {
             _column = column ?? throw new ArgumentNullException(nameof(column));
             _propertyName = propertyName ?? column;
-            _alias = alias;
+            Alias = alias;
         }
 
         public string ToSql(ISqlDialect dialect) 
-            => $"{_alias ?? string.Empty}.{dialect.GetColumn(_propertyName)} AS {dialect.GetColumn(_propertyName)}";
+            => $"{dialect.GetAlias(Alias)}{dialect.GetColumn(_propertyName)} AS {dialect.GetColumn(_propertyName)}";
+
+        public string Alias { get; set; }
     }
 }

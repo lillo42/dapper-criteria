@@ -17,10 +17,10 @@ namespace Dapper.Criteria
 
         public static SelectCriteria From(Type type)
         {
-            var table = AttributeResolvers.GetTableName(type);
-            var schema = AttributeResolvers.GetSchemaName(type);
+            var table = Resolvers.Resolvers.GetTableName(type);
+            var schema = Resolvers.Resolvers.GetSchemaName(type);
 
-            var properties = AttributeResolvers.GetSelectColumn(type);
+            var properties = Resolvers.Resolvers.GetSelectColumn(type);
 
             return new SelectCriteria(table, schema, properties);
         }

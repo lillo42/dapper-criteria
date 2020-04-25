@@ -16,7 +16,7 @@ namespace Dapper.Criteria.Expressions.Ands
 
         public void SetExpression(ISqlDialect dialect, StringBuilder query)
         {
-            query.Append("AND");
+            query.Append("AND ");
             _expression.SetExpression(dialect, query);
         }
     }

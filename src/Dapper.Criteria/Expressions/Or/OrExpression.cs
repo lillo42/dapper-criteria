@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace Dapper.Criteria.Expressions.Ors
+namespace Dapper.Criteria.Expressions.Or
 {
     public class OrExpression : IExpression
     {

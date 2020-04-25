@@ -1,16 +1,16 @@
 using System;
 using System.Text;
 
-namespace Dapper.Criteria.Expressions.Greater
+namespace Dapper.Criteria.Expressions.Less
 {
-    public class GreaterOrEqualByLiteralValueExpression : IExpression
+    public class LessByExpressionValueExpression : IExpression
     {
         public string Alias { get; set; }
 
         private readonly string _column;
         private readonly object _value;
 
-        public GreaterOrEqualByLiteralValueExpression(string column, object parameter, string @alias)
+        public LessByExpressionValueExpression(string column, object parameter, string @alias)
         {
             _column = column ?? throw new ArgumentNullException(nameof(column));
             _value = parameter ?? throw new ArgumentNullException(nameof(parameter));
@@ -22,7 +22,7 @@ namespace Dapper.Criteria.Expressions.Greater
             query
                 .Append(dialect.GetAlias(Alias))
                 .Append(dialect.GetColumn(_column))
-                .Append(" >= ")
+                .Append(" < ")
                 .Append(dialect.GetRawValue(_value));
         }
     }

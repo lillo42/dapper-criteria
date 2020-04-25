@@ -1,19 +1,19 @@
 using System;
 using System.Text;
 
-namespace Dapper.Criteria.Expressions.Less
+namespace Dapper.Criteria.Expressions.LessOrEqual
 {
-    public class LessExpression : IExpression
+    public class LessOrEqualByLiteralValueExpression : IExpression
     {
         public string Alias { get; set; }
 
         private readonly string _column;
-        private readonly string _parameter;
+        private readonly object _value;
 
-        public LessExpression(string column, string parameter, string @alias)
+        public LessOrEqualByLiteralValueExpression(string column, object parameter, string @alias)
         {
             _column = column ?? throw new ArgumentNullException(nameof(column));
-            _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
+            _value = parameter ?? throw new ArgumentNullException(nameof(parameter));
             Alias = @alias;
         }
 
@@ -22,8 +22,8 @@ namespace Dapper.Criteria.Expressions.Less
             query
                 .Append(dialect.GetAlias(Alias))
                 .Append(dialect.GetColumn(_column))
-                .Append(" < ")
-                .Append(dialect.GetParameter(_parameter));
+                .Append(" <= ")
+                .Append(dialect.GetRawValue(_value));
         }
     }
 }

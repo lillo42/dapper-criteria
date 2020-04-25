@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Dapper.Criteria.Expressions;
 using Dapper.Criteria.Expressions.Ands;
-using Dapper.Criteria.Expressions.Ors;
+using Dapper.Criteria.Expressions.Or;
 using Dapper.Criteria.Orders;
 using Dapper.Criteria.Resolvers;
 using Dapper.Criteria.Selects;

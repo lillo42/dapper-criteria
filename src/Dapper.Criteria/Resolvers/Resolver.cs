@@ -9,7 +9,7 @@ using Dapper.Criteria.Selects;
 
 namespace Dapper.Criteria.Resolvers
 {
-    internal static class Resolvers
+    internal static class Resolver
     {
         private static readonly ConcurrentDictionary<RuntimeTypeHandle, string> _tableName =
             new ConcurrentDictionary<RuntimeTypeHandle, string>();
@@ -21,6 +21,7 @@ namespace Dapper.Criteria.Resolvers
             new ConcurrentDictionary<RuntimeTypeHandle, List<ISelect>>();
         
         private static readonly ConcurrentDictionary<RuntimeTypeHandle, string> _defaultAlias = new ConcurrentDictionary<RuntimeTypeHandle, string>();
+        private static readonly ConcurrentDictionary<string, bool> _existAlias = new ConcurrentDictionary<string, bool>();
 
         public static string GetTableName(Type type)
         {
@@ -116,6 +117,17 @@ namespace Dapper.Criteria.Resolvers
             {
                 return alias;
             }
+
+            alias = type.Name[0].ToString();
+            var counter = 1;
+            
+            while (!_existAlias.TryAdd(alias, true))
+            {
+                alias += counter;
+            }
+
+            _defaultAlias.TryAdd(type.TypeHandle, alias);
+            return alias;
         }
     }
 }

@@ -17,12 +17,13 @@ namespace Dapper.Criteria
 
         public static SelectCriteria From(Type type)
         {
-            var table = Resolvers.Resolvers.GetTableName(type);
-            var schema = Resolvers.Resolvers.GetSchemaName(type);
+            var table = Resolver.GetTableName(type);
+            var schema = Resolver.GetSchemaName(type);
 
-            var properties = Resolvers.Resolvers.GetSelectColumn(type);
-
-            return new SelectCriteria(table, schema, properties);
+            var properties = Resolver.GetSelectColumn(type);
+            var alias = Resolver.GetDefaultAlias(type);
+            
+            return new SelectCriteria(table, schema,  properties);
         }
         
         private int? _maxResult;
@@ -45,9 +46,9 @@ namespace Dapper.Criteria
         {
             _table = table ?? throw new ArgumentNullException(nameof(table));
             _schema = schema;
+            
             _selects = selects ?? throw new ArgumentNullException(nameof(selects));
         }
-
         
         public SelectCriteria SetMaxResult(int maxResult)
         {
@@ -111,7 +112,8 @@ namespace Dapper.Criteria
         public string ToRawSql(ISqlDialect dialect)
         {
             var sb = new StringBuilder();
-
+            
+            
             sb.Append("SELECT ");
             
             var isFirst = true;

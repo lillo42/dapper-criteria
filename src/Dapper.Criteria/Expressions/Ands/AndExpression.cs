@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 namespace Dapper.Criteria.Expressions.Ands
 {
@@ -13,9 +14,10 @@ namespace Dapper.Criteria.Expressions.Ands
             _expression = expression ?? throw new ArgumentNullException(nameof(expression));
         }
 
-        public string ToSql(ISqlDialect dialect)
+        public void SetExpression(ISqlDialect dialect, StringBuilder query)
         {
-            return $"AND {_expression.ToSql(dialect)}";
+            query.Append("AND");
+            _expression.SetExpression(dialect, query);
         }
     }
 }

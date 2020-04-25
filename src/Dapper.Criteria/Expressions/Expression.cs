@@ -1,5 +1,6 @@
 using Dapper.Criteria.Expressions.Eqs;
 using Dapper.Criteria.Expressions.Likes;
+using Dapper.Criteria.Expressions.Null;
 
 namespace Dapper.Criteria.Expressions
 {
@@ -25,13 +26,20 @@ namespace Dapper.Criteria.Expressions
         
         public static IExpression Eq(string column, string parameter, string alias)
             => new EqualByParameterExpression(column, parameter, alias);
-        
-        
+
+
         public static IExpression EqLiteralValue(string column, object value)
-            => new EqualByValueExpression(column, value, null);
+            => EqLiteralValue(column, value, null);
         
         public static IExpression EqLiteralValue(string column, object value, string alias)
-            => new EqualByValueExpression(column, value, alias);
+        {
+            if (value == null)
+            {
+                return new IsNullExpression(column, alias);
+            }
+            
+            return new EqualByValueExpression(column, value, alias);
+        } 
         #endregion
         
     }

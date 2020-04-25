@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 namespace Dapper.Criteria.Orders
 {
@@ -13,8 +14,12 @@ namespace Dapper.Criteria.Orders
         }
 
         public string Alias { get; set; }
-
-        public string ToSql(ISqlDialect dialect) 
-            => $"{dialect.GetAlias(Alias)}{dialect.GetColumn(_column)} ASC";
+        
+        public void SetExpression(ISqlDialect dialect, StringBuilder query)
+        {
+            query.Append(dialect.GetAlias(Alias))
+                .Append(dialect.GetColumn(_column))
+                .Append(" ASC");
+        }
     }
 }

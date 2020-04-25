@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 namespace Dapper.Criteria.Expressions.Ors
 {
@@ -13,7 +14,10 @@ namespace Dapper.Criteria.Expressions.Ors
             _expression = expression ?? throw new ArgumentNullException(nameof(expression));
         }
 
-        public string ToSql(ISqlDialect dialect) 
-            => $"OR {_expression.ToSql(dialect)}";
+        public void SetExpression(ISqlDialect dialect, StringBuilder query)
+        {
+            query.Append("OR ");
+            _expression.SetExpression(dialect, query);
+        }
     }
 }

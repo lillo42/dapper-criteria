@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 namespace Dapper.Criteria.Expressions.Likes
 {
@@ -15,8 +16,13 @@ namespace Dapper.Criteria.Expressions.Likes
         }
 
         public string Alias { get; set; }
-
-        public string ToSql(ISqlDialect dialect) 
-            => $"{dialect.GetAlias(Alias)}.{dialect.GetColumn(_column)} LIKE '{_value}'";
+       
+        public void SetExpression(ISqlDialect dialect, StringBuilder query)
+        {
+            query.Append(dialect.GetAlias(Alias))
+                .Append(dialect.GetColumn(_column))
+                .Append(" LIKE ")
+                .Append("'").Append(_value).Append("'");
+        }
     }
 }

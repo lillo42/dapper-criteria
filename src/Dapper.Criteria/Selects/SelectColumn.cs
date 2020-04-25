@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 namespace Dapper.Criteria.Selects
 {
@@ -14,9 +15,17 @@ namespace Dapper.Criteria.Selects
             Alias = alias;
         }
 
-        public string ToSql(ISqlDialect dialect) 
+        public string SetExpression(ISqlDialect dialect) 
             => $"{dialect.GetAlias(Alias)}{dialect.GetColumn(_propertyName)} AS {dialect.GetColumn(_propertyName)}";
 
         public string Alias { get; set; }
+        
+        public void SetExpression(ISqlDialect dialect, StringBuilder query)
+        {
+            query.Append(dialect.GetAlias(Alias))
+                .Append(dialect.GetColumn(_column))
+                .Append(" AS ")
+                .Append(dialect.GetColumn(_propertyName));
+        }
     }
 }

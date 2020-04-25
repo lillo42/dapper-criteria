@@ -1,10 +1,10 @@
+using System.Text;
+
 namespace Dapper.Criteria
 {
     public interface ISqlDialect
     {
-        bool LimitIsInTheEndOfQuery { get; }
-
-        string Limit();
+        void SetLimit(int limit, StringBuilder query);
 
         string GetParameter(string parameter);
         

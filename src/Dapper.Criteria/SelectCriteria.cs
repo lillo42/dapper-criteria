@@ -1,11 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Serialization;
 using System.Text;
-using Dapper.Contrib.Extensions;
-using Dapper.Criteria.Attributes;
 using Dapper.Criteria.Expressions;
 using Dapper.Criteria.Expressions.Ands;
 using Dapper.Criteria.Expressions.Ors;
@@ -17,13 +12,10 @@ namespace Dapper.Criteria
 {
     public class SelectCriteria
     {
-        public static SelectCriteria Create(string table) 
-            => new SelectCriteria(table, null);
-
-        public static SelectCriteria Create(string table, string schema) 
+        public static SelectCriteria From(string table, string schema = null) 
             => new SelectCriteria(table, schema);
 
-        public static SelectCriteria Create(Type type)
+        public static SelectCriteria From(Type type)
         {
             var table = AttributeResolvers.GetTableName(type);
             var schema = AttributeResolvers.GetSchemaName(type);
@@ -33,7 +25,7 @@ namespace Dapper.Criteria
             return new SelectCriteria(table, schema, properties);
         }
         
-        private int? _limit;
+        private int? _maxResult;
 
         private readonly string _schema;
         private readonly string _table;
@@ -59,7 +51,7 @@ namespace Dapper.Criteria
         
         public SelectCriteria SetMaxResult(int maxResult)
         {
-            _limit = maxResult;
+            _maxResult = maxResult;
             return this;
         }
 
@@ -121,13 +113,7 @@ namespace Dapper.Criteria
             var sb = new StringBuilder();
 
             sb.Append("SELECT ");
-
-            if (_limit.HasValue && !dialect.LimitIsInTheEndOfQuery)
-            {
-                sb.Append(dialect.Limit()).Append(" ").Append(_limit.Value)
-                    .Append("");
-            }
-
+            
             var isFirst = true;
             
             foreach (var @select in _selects) 
@@ -137,11 +123,11 @@ namespace Dapper.Criteria
                     sb.Append(", ");
                 }
 
-                sb.Append(select.ToSql(dialect));
+                @select.SetExpression(dialect, sb);
                 isFirst = false; 
             }
 
-            sb.Append(" ")
+            sb.Append(" FROM ")
                 .Append(dialect.GetSchema(_schema)).Append(".")
                 .Append(dialect.GetTable(_table));
 
@@ -151,8 +137,8 @@ namespace Dapper.Criteria
                 
                 foreach (var @where in _where) 
                 {
-                    sb.Append(where.ToSql(dialect))
-                        .Append(" ");
+                    @where.SetExpression(dialect, sb);
+                    sb.Append(" ");
                 }
             }
 
@@ -168,15 +154,14 @@ namespace Dapper.Criteria
                         sb.Append(", ");
                     }
                 
-                    sb.Append(order.ToSql(dialect));
+                    @order.SetExpression(dialect, sb);
                     isFirst = false;
                 }
             }
-            
-            if (_limit.HasValue && dialect.LimitIsInTheEndOfQuery)
+
+            if (_maxResult.HasValue)
             {
-                sb.Append(dialect.Limit()).Append(" ").Append(_limit.Value)
-                    .Append("");
+                dialect.SetLimit(_maxResult.Value, sb);
             }
             
             return sb.ToString();

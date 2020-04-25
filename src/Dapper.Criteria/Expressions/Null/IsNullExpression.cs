@@ -1,13 +1,13 @@
 using System;
 using System.Text;
 
-namespace Dapper.Criteria.Orders
+namespace Dapper.Criteria.Expressions.Null
 {
-    public class OrderDesc : IOrder
+    public class IsNullExpression : IExpression
     {
         private readonly string _column;
 
-        public OrderDesc(string column, string @alias)
+        public IsNullExpression(string column, string @alias)
         {
             _column = column ?? throw new ArgumentNullException(nameof(column));
             Alias = alias;
@@ -19,7 +19,7 @@ namespace Dapper.Criteria.Orders
         {
             query.Append(dialect.GetAlias(Alias))
                 .Append(dialect.GetColumn(_column))
-                .Append(" DESC");
+                .Append(" IS NULL");
         }
     }
 }

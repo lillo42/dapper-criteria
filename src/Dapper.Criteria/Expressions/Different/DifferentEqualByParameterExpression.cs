@@ -1,14 +1,14 @@
 using System;
 using System.Text;
 
-namespace Dapper.Criteria.Expressions.NotEqs
+namespace Dapper.Criteria.Expressions.Different
 {
-    public class NotEqualByParameterExpression : IExpression
+    public class DifferentEqualByParameterExpression : IExpression
     {
         private readonly string _column;
         private readonly string _parameter;
 
-        public NotEqualByParameterExpression(string column, string parameter, string @alias)
+        public DifferentEqualByParameterExpression(string column, string parameter, string @alias)
         {
             _column = column ?? throw new ArgumentNullException(nameof(column));
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));

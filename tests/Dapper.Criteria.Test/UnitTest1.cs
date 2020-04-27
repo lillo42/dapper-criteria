@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using Dapper.Criteria.Expressions;
 using Dapper.Criteria.Orders;
@@ -26,6 +27,10 @@ namespace Dapper.Criteria.Test
                 .OrderBy(Order.Async(nameof(Client.Id)));
             
             var sql2 = criteria2.ToRawSql(new FakeDialect());
+            
+            
+            var criteria3 = SelectCriteria.From(typeof(Client))
+                .InnerJoin(typeof(Address), null); // A ON A.Id = C.AddressId
         }
         
         public class Client
@@ -34,6 +39,16 @@ namespace Dapper.Criteria.Test
             public string Name { get; set; }
             public DateTime BirthDate { get; set; }
             public bool IsEnable { get; set; }
+            
+            public int AddressId { get; set; }
+            
+            public Address Address { get; set; }
+        }
+        
+        public class Address
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
         }
         
         public class FakeDialect : ISqlDialect

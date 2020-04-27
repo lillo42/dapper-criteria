@@ -17,9 +17,6 @@ namespace Dapper.Criteria.Resolvers
         private static readonly ConcurrentDictionary<RuntimeTypeHandle, string> _schemaName =
             new ConcurrentDictionary<RuntimeTypeHandle, string>();
 
-        private static readonly ConcurrentDictionary<RuntimeTypeHandle, List<ISelect>> _selectColumn =
-            new ConcurrentDictionary<RuntimeTypeHandle, List<ISelect>>();
-        
         private static readonly ConcurrentDictionary<RuntimeTypeHandle, string> _defaultAlias = new ConcurrentDictionary<RuntimeTypeHandle, string>();
         private static readonly ConcurrentDictionary<string, bool> _existAlias = new ConcurrentDictionary<string, bool>();
 
@@ -73,12 +70,7 @@ namespace Dapper.Criteria.Resolvers
 
         public static List<ISelect> GetSelectColumn(Type type)
         {
-            if (_selectColumn.TryGetValue(type.TypeHandle, out var columns))
-            {
-                return columns;
-            }
-            
-            columns = new List<ISelect>();
+            var columns = new List<ISelect>();
 
             foreach (var property in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
@@ -107,7 +99,6 @@ namespace Dapper.Criteria.Resolvers
                 columns.Add(new SelectColumn(column, property.Name, null));
             }
             
-            _selectColumn[type.TypeHandle] = columns;
             return columns;
         }
 
